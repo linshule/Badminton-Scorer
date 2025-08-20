@@ -1,0 +1,156 @@
+page {
+  height: 100%;
+  overflow: hidden;
+}
+
+.badminton-scorer {
+  display: flex;
+  flex-direction: row;
+  height: 100vh; /* 占满整个视口高度 */
+  width: 100vw;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #ffffff;
+  background-color: #2c3e50;
+}
+
+.player-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: background-color 0.3s ease;
+  user-select: none; /* 防止长按选择文本 */
+}
+
+.player-section.player-1 {
+  background-color: #4a90e2;
+}
+
+.player-section.player-2 {
+  background-color: #e25a4a;
+}
+
+.player-section .score {
+  font-size: 180rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.player-section .player-info {
+  position: absolute;
+  bottom: 40rpx;
+  text-align: center;
+}
+
+.player-section .player-name {
+  font-size: 32rpx;
+  font-weight: 500;
+}
+
+.player-section .games-won {
+  position: absolute;
+  top: 40rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  background-color: rgba(0, 0, 0, 0.15);
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+}
+
+.player-section .serving-indicator {
+  margin-top: 10rpx;
+  padding: 6rpx 16rpx;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 16rpx;
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.center-controls {
+  width: 160rpx;
+  background-color: #2c3e50;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20rpx 0;
+  box-shadow: 0 0 20rpx rgba(0,0,0,0.5);
+  position: relative;
+  z-index: 10;
+}
+
+.center-controls .divider-line {
+  width: 60%;
+  height: 2rpx;
+  background-color: rgba(255, 255, 255, 0.3);
+  margin: 30rpx 0;
+}
+
+.center-controls .buttons-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.center-controls .control-btn {
+  background-color: #34495e;
+  color: #ffffff;
+  border: none;
+  border-radius: 10rpx;
+  padding: 10rpx 0;
+  margin: 15rpx 0;
+  width: 120rpx;
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+
+/* Taro Button组件的样式穿透 */
+.center-controls .control-btn::after {
+  border: none;
+}
+
+.center-controls .control-btn:active {
+  background-color: #4e6a85;
+}
+
+.center-controls .control-btn.reset,
+.center-controls .control-btn.next-game {
+  background-color: #c0392b;
+}
+
+.center-controls .control-btn.reset:active {
+  background-color: #e74c3c;
+}
+
+.center-controls .control-btn.next-game {
+  background-color: #27ae60;
+}
+
+.center-controls .control-btn.next-game:active {
+  background-color: #2ecc71;
+}
+
+.winner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
+}
+
+.winner-overlay .winner-text {
+  font-size: 80rpx;
+  font-weight: bold;
+  color: #f1c40f;
+  transform: rotate(-10deg);
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+}
