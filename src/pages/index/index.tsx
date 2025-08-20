@@ -1,5 +1,5 @@
 import { View, Text, Button } from '@tarojs/components'
-import { useReducer, useEffect } from 'react'
+import { useReducer, useEffect ,useRef } from 'react'
 import Taro from '@tarojs/taro'
 import './index.css'
 
@@ -8,7 +8,6 @@ interface GameState {
   player1: { score: number; gamesWon: number };
   player2: { score: number; gamesWon: number };
   servingPlayer: 1 | 2; // 1 或 2, 代表发球方
-  history: GameState[]; // 用于撤销操作
   winner: 1 | 2 | null; // 单局获胜者
 }
 
@@ -17,7 +16,6 @@ const initialState: GameState = {
   player1: { score: 0, gamesWon: 0 },
   player2: { score: 0, gamesWon: 0 },
   servingPlayer: 1,
-  history: [],
   winner: null,
 };
 
@@ -29,8 +27,11 @@ function gameReducer(state: GameState, action: { type: string; payload?: any }):
       if (state.winner) return state;
 
       const player = action.payload.player as 1 | 2;
-      const newState = JSON.parse(JSON.stringify(state)); // 深拷贝 state
-      newState.history.push(JSON.parse(JSON.stringify(state))); // 保存当前状态到历史记录
+      const newState = {
+        ...state,
+        player1: { ...state.player1 },
+        player2: { ...state.player2 }
+      };
 
       if (player === 1) {
         newState.player1.score++;
@@ -62,15 +63,16 @@ function gameReducer(state: GameState, action: { type: string; payload?: any }):
 
       return newState;
     }
-    case 'UNDO': {
-      // 撤销操作
-      const lastState = state.history[state.history.length - 1];
-      return lastState ? lastState : state; // 如果有历史记录则返回，否则不变
+    case 'SET_STATE': {
+      return action.payload;
     }
     case 'EXCHANGE_SIDES': {
-        // 交换场地，同时保留历史记录
-        const newState = JSON.parse(JSON.stringify(state));
-        newState.history.push(JSON.parse(JSON.stringify(state)));
+        // 交换场地
+        const newState = {
+          ...state,
+          player1: { ...state.player1 },
+          player2: { ...state.player2 }
+        };
         
         const tempPlayer = newState.player1;
         newState.player1 = newState.player2;
@@ -101,6 +103,7 @@ function gameReducer(state: GameState, action: { type: string; payload?: any }):
 
 export default function Index() {
   const [state, dispatch] = useReducer(gameReducer, initialState);
+  const historyRef = useRef<GameState[]>([]);
 
   const { player1, player2, servingPlayer, winner } = state;
 
@@ -111,16 +114,38 @@ export default function Index() {
 
   const handleAddPoint = (player: 1 | 2) => {
     vibrate();
+
+    const currentState = {
+      player1: { ...state.player1 },
+      player2: { ...state.player2 },
+      servingPlayer: state.servingPlayer,
+      winner: state.winner,
+    };
+    historyRef.current.push(currentState);
+
     dispatch({ type: 'ADD_POINT', payload: { player } });
   };
 
   const handleUndo = () => {
     vibrate();
-    dispatch({ type: 'UNDO' });
+    const lastState = historyRef.current.pop(); // 取出最后一步
+    if (lastState) {
+      dispatch({ type: 'SET_STATE', payload: lastState });
+    }
   };
   
   const handleExchange = () => {
     vibrate();
+
+    // ✅ 保存当前状态到历史
+    const currentState = {
+      player1: { ...state.player1 },
+      player2: { ...state.player2 },
+      servingPlayer: state.servingPlayer,
+      winner: state.winner,
+    };
+    historyRef.current.push(currentState);
+
     dispatch({ type: 'EXCHANGE_SIDES' });
   };
 
@@ -192,7 +217,7 @@ export default function Index() {
       </View>
 
       {/* 获胜提示 */}
-      {winner && (
+      {winner && false && (
         <View className='winner-overlay'>
           <Text className='winner-text'>PLAYER {winner} 获胜！</Text>
         </View>
